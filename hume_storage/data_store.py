@@ -12,6 +12,20 @@ def start():
     """
     Initialize the data store.
     """
+    root_logger = logging.getLogger("hume_storage")
+    root_logger.setLevel(logging.DEBUG)
+
+    handler = logging.StreamHandler()  # Print logging messages
+
+    formatter = logging.Formatter(fmt="{asctime} {levelname:^8} "
+                                      "{module} {message}",
+                                  style="{",
+                                  datefmt="%d/%m/%Y %H:%M:%S")
+    handler.setFormatter(formatter)
+    handler.setLevel(logging.DEBUG)
+
+    root_logger.addHandler(handler)
+
     LOGGER.info("data store start")
 
 
