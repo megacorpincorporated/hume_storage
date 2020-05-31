@@ -53,7 +53,30 @@ def get(cls, key):
     :param key: key
     :return: class object matching key
     """
+    LOGGER.info("getting object")
     return _store.get(cls, key)
+
+
+def get_all(cls):
+    """
+    Get all object for the provided model class.
+
+    :param cls:
+    :return:
+    """
+    LOGGER.info("getting all objects")
+    return _store.get_all(cls)
+
+
+def delete(obj):
+    """
+    Removes the object from both local and persistent storage.
+
+    :param obj:
+    :return:
+    """
+    LOGGER.info("deleting object")
+    _store.delete(obj)
 
 
 class DataStore:
@@ -78,7 +101,7 @@ class DataStore:
         """
         # Registration process:
         # 1. Define storage space in _store, named same as model class
-        # 2. TODO Get data from storage if persistent
+        # 2. Get data from storage if persistent
         LOGGER.debug(f"Registering model")
 
         self.define_storage(model)
@@ -127,6 +150,24 @@ class DataStore:
         :return: class object matching key
         """
         return self._local_storage.get(cls, key)
+
+    def get_all(self, cls):
+        """
+        Get all object of the provided class.
+
+        :param cls:
+        :return:
+        """
+        return self._local_storage.get_all(cls)
+
+    def delete(self, obj):
+        """
+        Removes the object from both local and persistent storage.
+
+        :param obj:
+        """
+        self._persistent_storage.delete(obj)
+        self._local_storage.delete(obj)
 
 
 _store = DataStore()

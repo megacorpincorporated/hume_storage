@@ -37,7 +37,7 @@ class LocalStorage:
 
         table = self._data_dict[obj.__class__.__name__]
         table.update({getattr(obj, obj.local_key_field()): obj})
-        LOGGER.debug(f"Current local storage state: {self._data_dict}")
+        LOGGER.debug(f"resulting local storage state: {self._data_dict}")
 
     def get(self, cls, key):
         """
@@ -46,15 +46,28 @@ class LocalStorage:
 
         :param cls: class
         :param key: key
-        :return: class object matching key
+        :return: class object matching key or None
         """
         LOGGER.debug("getting object")
 
         table = self._data_dict[cls.__name__]
         LOGGER.debug(f"table contents: {table}")
-        result = table[key]
+        result = table.get(key)
 
         return result
+
+    def get_all(self, cls):
+        """
+        Get all objects of the provided class.
+
+        :param cls:
+        :return:
+        """
+        LOGGER.debug(f"getting all object of model: {cls}")
+
+        table = self._data_dict[cls.__name__]
+
+        return table.values()
 
     def save_all(self, data):
         """
@@ -66,3 +79,15 @@ class LocalStorage:
 
         for obj in data:
             self.save(obj)
+
+    def delete(self, obj):
+        """
+        Removes the object from both local and persistent storage.
+
+        :param obj:
+        """
+        LOGGER.debug("deleting object from local storage")
+        table = self._data_dict[obj.__class__.__name__]
+
+        table.pop(getattr(obj, obj.local_key_field()))
+        LOGGER.debug(f"resulting local storage state: {self._data_dict}")
