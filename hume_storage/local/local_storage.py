@@ -1,6 +1,6 @@
 import logging
 
-from hume_storage.persistent.postgres import SINGLETON
+from hume_storage.definitions import SINGLETON
 
 
 LOGGER = logging.getLogger(__name__)
