@@ -1,5 +1,7 @@
 import logging
 
+from hume_storage.persistent.postgres import SINGLETON
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,7 +25,11 @@ class LocalStorage:
         """
         LOGGER.debug("Defining local storage")
 
-        self._data_dict[model.__name__] = dict()
+        if model.local_key_field() == SINGLETON:
+            # No need for initialization, just need the table key.
+            self._data_dict[model.__name__] = None
+        else:
+            self._data_dict[model.__name__] = dict()
 
         LOGGER.debug(f"Current local storage state: {self._data_dict}")
 
@@ -35,8 +41,14 @@ class LocalStorage:
         """
         LOGGER.debug("saving to in memory dictionary")
 
-        table = self._data_dict[obj.__class__.__name__]
-        table.update({getattr(obj, obj.local_key_field()): obj})
+        local_key_field = obj.local_key_field()
+
+        if local_key_field == SINGLETON:
+            self._data_dict[obj.__class__.__name__] = obj
+        else:
+            table = self._data_dict[obj.__class__.__name__]
+            table.update({getattr(obj, local_key_field): obj})
+
         LOGGER.debug(f"resulting local storage state: {self._data_dict}")
 
     def get(self, cls, key):
@@ -52,9 +64,12 @@ class LocalStorage:
 
         table = self._data_dict[cls.__name__]
         LOGGER.debug(f"table contents: {table}")
-        result = table.get(key)
 
-        return result
+        if cls.local_key_field() == SINGLETON:
+            # Just one object exists.
+            return table
+
+        return table.get(key)
 
     def get_all(self, cls):
         """
@@ -65,9 +80,11 @@ class LocalStorage:
         """
         LOGGER.debug(f"getting all object of model: {cls}")
 
-        table = self._data_dict[cls.__name__]
-
-        return table.values()
+        if cls.local_key_field() == SINGLETON:
+            return self._data_dict[cls.__name__]
+        else:
+            table = self._data_dict[cls.__name__]
+            return table.values()
 
     def save_all(self, data):
         """

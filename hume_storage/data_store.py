@@ -116,7 +116,7 @@ class DataStore:
         # Registration process:
         # 1. Define storage space in _store, named same as model class
         # 2. Get data from storage if persistent
-        LOGGER.debug(f"Registering model")
+        LOGGER.debug("Registering model")
 
         self.define_storage(model)
 
