@@ -104,7 +104,12 @@ class LocalStorage:
         :param obj:
         """
         LOGGER.debug("deleting object from local storage")
-        table = self._data_dict[obj.__class__.__name__]
 
-        table.pop(getattr(obj, obj.local_key_field()))
+        if obj.local_key_field() == SINGLETON:
+            # Can't pop the whole table...
+            self._data_dict[obj.__class__.__name__] = None
+        else:
+            table = self._data_dict[obj.__class__.__name__]
+            table.pop(getattr(obj, obj.local_key_field()))
+
         LOGGER.debug(f"resulting local storage state: {self._data_dict}")
