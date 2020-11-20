@@ -5,7 +5,11 @@ import peewee
 LOGGER = logging.getLogger(__name__)
 
 PSQL_DB_NAME = "hume"
-PSQL_DB = peewee.PostgresqlDatabase(PSQL_DB_NAME)
+
+# TODO parameterize
+PSQL_DB = peewee.PostgresqlDatabase(PSQL_DB_NAME,
+                                    user="hume",
+                                    password="password")
 
 
 class PersistentModel(peewee.Model):
