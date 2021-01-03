@@ -1,4 +1,5 @@
 import logging
+import copy
 
 from hume_storage.definitions import SINGLETON
 
@@ -67,9 +68,9 @@ class LocalStorage:
 
         if cls.local_key_field() == SINGLETON:
             # Just one object exists.
-            return table
+            return copy.deepcopy(table)
 
-        return table.get(key)
+        return copy.copy(table.get(key))
 
     def get_all(self, cls):
         """
@@ -81,9 +82,9 @@ class LocalStorage:
         LOGGER.debug(f"getting all object of model: {cls}")
 
         if cls.local_key_field() == SINGLETON:
-            return self._data_dict[cls.__name__]
+            return copy.copy(self._data_dict[cls.__name__])
         else:
-            table = self._data_dict[cls.__name__]
+            table = copy.deepcopy(self._data_dict[cls.__name__])
             return table.values()
 
     def save_all(self, data):
